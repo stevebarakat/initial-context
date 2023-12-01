@@ -11,7 +11,6 @@
     "seed": "esbuild prisma/seed.ts --outfile=node_modules/tmp-seed.cjs --bundle --format=cjs --external:prisma --external:@prisma/client && node node_modules/tmp-seed.cjs --preview-feature"
   },
   "dependencies": {
-    "@prisma/client": "^5.6.0",
     "@remix-run/css-bundle": "^2.3.1",
     "@remix-run/node": "^2.3.1",
     "@remix-run/react": "^2.3.1",
@@ -21,11 +20,11 @@
     "localforage": "^1.10.0",
     "localforage-getitems": "^1.4.2",
     "localforage-setitems": "^1.4.0",
-    "prisma": "^5.6.0",
     "random-word-slugs": "^0.1.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tiny-invariant": "^1.3.1",
+    "uuid": "^9.0.1",
     "xstate": "^4.38.3"
   },
   "devDependencies": {
