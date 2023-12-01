@@ -19,5 +19,8 @@ console.log("initialContext.sourceSong", initialContext.sourceSong);
 export const mixerMachine = createMachine({
   id: "mixer",
   // context: initialContext,
+  on: {
+    SET_CONTEXT: { actions: "setContext" },
+  },
   predictableActionArguments: true,
 });
