@@ -1,52 +1,35 @@
 import { useLoaderData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
+import {
+  getSourceSong,
+  getCurrentMix,
+  getCurrentTracks,
+} from "@/utils/controls.server";
 import invariant from "tiny-invariant";
-import { MixerMachineContext } from "~/context/MixerMachineContext";
+import { MixerMachineContext, initMachine } from "~/machines/initMachine";
 import localforage from "localforage";
 import { extendPrototype } from "localforage-setitems";
-import { aDayInTheLife, everlong, roxanne } from "~/assets/songs";
-import { defaultTrackData } from "~/assets/songs/defaultData";
+import { interpret } from "xstate";
 extendPrototype(localforage);
+
+type Data = {
+  sourceSong: any;
+  currentMix: any;
+  currentTracks: any;
+};
 
 export const loader: LoaderFunction = async ({ params: { slug, mixId } }) => {
   if (typeof mixId !== "string") return redirect(`/`);
 
   invariant(slug, "slug not found");
-  let sourceSong = roxanne;
-
-  switch (slug) {
-    case "roxanne":
-      sourceSong = roxanne;
-      break;
-    case "aDayInTheLife":
-      sourceSong = aDayInTheLife;
-      break;
-    case "everlong":
-      sourceSong = everlong;
-      break;
-    default:
-      break;
-  }
-
-  const mixSettings = {
-    id: "lk4j3l4j",
-    mixName: "Test Mix",
-    volume: -32,
-  };
-
-  const currentTracks = sourceSong.tracks.map((track) => ({
-    mixSettingsId: mixSettings.id,
-    songSlug: slug as string,
-    name: track.name,
-    mixName: mixSettings.mixName,
-    path: track.path,
-    ...defaultTrackData,
-  }));
+  const sourceSong = await getSourceSong(slug);
+  const currentMix = await getCurrentMix(mixId);
+  let currentTracks = await getCurrentTracks(mixId);
 
   const data: Data = {
     currentTracks,
-    currentMix: mixSettings,
+    currentMix,
     sourceSong,
   };
   return json(data);
@@ -54,25 +37,33 @@ export const loader: LoaderFunction = async ({ params: { slug, mixId } }) => {
 
 export default function MixNameRoute() {
   const { sourceSong, currentMix, currentTracks } = useLoaderData();
+  const initActor = interpret(initMachine);
+  initActor.start();
+
+  initActor.subscribe((state) => {
+    console.log("state.value", state.value);
+    console.log("state.context", state.context);
+  });
 
   if (sourceSong?.tracks.length !== currentTracks.length) {
     if (typeof window === "undefined") return;
     window.location.reload();
   }
   if (typeof window !== "undefined") {
-    localforage
-      .setItems({
-        sourceSong,
-        currentMix,
-        currentTracks,
-      })
-      .catch(function (err) {
-        console.log("err", err);
-      });
+    console.log("currentTracks", currentTracks);
+
+    const value = { sourceSong, currentMix, currentTracks };
+    const promise = new Promise((resolve) => {
+      setTimeout(() => resolve(value), 1000);
+    });
+    promise.then((val) => {
+      console.log("val", val);
+      return initActor.send({ type: "SET_CONTEXT", value: val });
+    });
   }
 
-  const trackNames = currentTracks.map((track, i) => (
-    <ul key={i}>
+  const trackNames = currentTracks.map((track) => (
+    <ul key={track.id}>
       <li>track name: {track.name}</li>
       <li>track volume: {track.volume}</li>
     </ul>
