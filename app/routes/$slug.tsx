@@ -1,10 +1,21 @@
 import type { ActionFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { defaultTrackData } from "@/assets/songs/defaultData";
-import { roxanne } from "~/assets/songs";
+import { aDayInTheLife, roxanne } from "~/assets/songs";
 
 export const action: ActionFunction = async ({ params: { slug } }) => {
-  const sourceSong = roxanne;
+  let sourceSong;
+
+  switch (slug) {
+    case "roxanne":
+      sourceSong = roxanne;
+      break;
+    case "aDayInTheLife":
+      sourceSong = aDayInTheLife;
+      break;
+    default:
+      break;
+  }
 
   const mixSettings = {
     id: "lk4j3l4j",

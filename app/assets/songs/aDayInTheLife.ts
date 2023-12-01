@@ -2,6 +2,7 @@ import { v4 as uuid } from "uuid";
 
 export const aDayInTheLife = {
   title: "A Day In The Life",
+  id: "lk423j",
   slug: "a-day-in-the-life",
   artist: "The Beatles",
   year: "1967",

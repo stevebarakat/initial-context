@@ -5,16 +5,29 @@ import invariant from "tiny-invariant";
 import { MixerMachineContext } from "~/context/MixerMachineContext";
 import localforage from "localforage";
 import { extendPrototype } from "localforage-setitems";
-import { roxanne } from "~/assets/songs";
+import { aDayInTheLife, everlong, roxanne } from "~/assets/songs";
 import { defaultTrackData } from "~/assets/songs/defaultData";
-import { currentTracks, currentMix } from "~/machines/init.client";
 extendPrototype(localforage);
 
 export const loader: LoaderFunction = async ({ params: { slug, mixId } }) => {
   if (typeof mixId !== "string") return redirect(`/`);
 
   invariant(slug, "slug not found");
-  const sourceSong = roxanne;
+  let sourceSong = roxanne;
+
+  switch (slug) {
+    case "roxanne":
+      sourceSong = roxanne;
+      break;
+    case "aDayInTheLife":
+      sourceSong = aDayInTheLife;
+      break;
+    case "everlong":
+      sourceSong = everlong;
+      break;
+    default:
+      break;
+  }
 
   const mixSettings = {
     id: "lk4j3l4j",

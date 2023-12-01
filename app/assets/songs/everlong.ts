@@ -2,6 +2,8 @@ import { v4 as uuid } from "uuid";
 
 export const everlong = {
   title: "Everlong",
+  id: "jlrwkej",
+  slug: "everlong",
   artist: "Foo Fighters",
   year: "1997",
   studio: "Grandmaster Recorders",
