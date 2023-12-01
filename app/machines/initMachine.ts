@@ -22,7 +22,6 @@ export const initMachine = createMachine(
   {
     actions: {
       setContext: assign((context, { value }) => {
-        console.log("value!!", value);
         return produce(context, (draft) => {
           draft.sourceSong = value.sourceSong;
           draft.currentMix = value.currentMix;
@@ -32,5 +31,3 @@ export const initMachine = createMachine(
     },
   }
 );
-
-export const MixerMachineContext = createActorContext(initMachine);

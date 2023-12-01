@@ -1,13 +1,14 @@
 import { useLoaderData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
+import Mixer from "~/components/Mixer";
 import {
   getSourceSong,
   getCurrentMix,
   getCurrentTracks,
 } from "@/utils/controls.server";
 import invariant from "tiny-invariant";
-import { MixerMachineContext, initMachine } from "~/machines/initMachine";
+import { initMachine } from "~/machines/initMachine";
 import localforage from "localforage";
 import { extendPrototype } from "localforage-setitems";
 import { interpret } from "xstate";
@@ -62,13 +63,5 @@ export default function MixNameRoute() {
     });
   }
 
-  const trackNames = currentTracks.map((track) => (
-    <ul key={track.id}>
-      <li>track name: {track.name}</li>
-      <li>track volume: {track.volume}</li>
-    </ul>
-  ));
-  return (
-    <MixerMachineContext.Provider>{trackNames}</MixerMachineContext.Provider>
-  );
+  return <Mixer />;
 }
