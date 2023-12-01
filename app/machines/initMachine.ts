@@ -1,6 +1,4 @@
-import { currentTracks } from "./init.client";
 import { assign, createMachine } from "xstate";
-import { createActorContext } from "@xstate/react";
 import { produce } from "immer";
 
 export const initMachine = createMachine(
