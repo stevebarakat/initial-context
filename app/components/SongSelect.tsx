@@ -34,13 +34,7 @@ function SongSelect() {
           <option value="everlong">Foo Fighters - Everlong</option>
         </select>
         <button disabled={isDisabled} className="submit-btn">
-          {isDisabled ? (
-            <>
-              <span style={{ position: "relative", top: 2 }}>⬅</span>Choose Mix
-            </>
-          ) : (
-            "Create Mix"
-          )}
+          Create Mix
         </button>
       </fetcher.Form>
     </>

@@ -2,17 +2,10 @@ import { useLoaderData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import Mixer from "~/components/Mixer";
-import {
-  getSourceSong,
-  getCurrentMix,
-  getCurrentTracks,
-} from "@/utils/controls.server";
+import { getInitialState } from "./$slug";
 import invariant from "tiny-invariant";
-import { initMachine } from "~/machines/initMachine";
-import localforage from "localforage";
-import { extendPrototype } from "localforage-setitems";
-import { interpret } from "xstate";
-extendPrototype(localforage);
+import { initMachine } from "~/machines/mixerMachine";
+import { useInterpret } from "@xstate/react";
 
 type Data = {
   sourceSong: any;
@@ -24,9 +17,7 @@ export const loader: LoaderFunction = async ({ params: { slug, mixId } }) => {
   if (typeof mixId !== "string") return redirect(`/`);
 
   invariant(slug, "slug not found");
-  const sourceSong = await getSourceSong(slug);
-  const currentMix = await getCurrentMix(mixId);
-  let currentTracks = await getCurrentTracks(mixId);
+  const { sourceSong, currentMix, currentTracks } = getInitialState(slug);
 
   const data: Data = {
     currentTracks,
@@ -38,10 +29,10 @@ export const loader: LoaderFunction = async ({ params: { slug, mixId } }) => {
 
 export default function MixNameRoute() {
   const { sourceSong, currentMix, currentTracks } = useLoaderData();
-  const initActor = interpret(initMachine);
-  initActor.start();
+  const mixerActor = useInterpret(initMachine);
+  mixerActor.start();
 
-  initActor.subscribe((state) => {
+  mixerActor.subscribe((state) => {
     console.log("state.value", state.value);
     console.log("state.context", state.context);
   });
@@ -54,13 +45,7 @@ export default function MixNameRoute() {
     console.log("currentTracks", currentTracks);
 
     const value = { sourceSong, currentMix, currentTracks };
-    const promise = new Promise((resolve) => {
-      setTimeout(() => resolve(value), 1000);
-    });
-    promise.then((val) => {
-      console.log("val", val);
-      return initActor.send({ type: "SET_CONTEXT", value: val });
-    });
+    mixerActor.send({ type: "SET_CONTEXT", ...value });
   }
 
   return <Mixer />;

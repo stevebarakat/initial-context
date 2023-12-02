@@ -1,6 +1,6 @@
 import SongSelect from "@/components/SongSelect";
 
-export default function DashboardRoute() {
+export default function IndexRoute() {
   return (
     <>
       <SongSelect />
