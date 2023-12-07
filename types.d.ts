@@ -6,13 +6,6 @@ declare global {
     slug: string;
     title: string;
     artist: string;
-    year: string;
-    studio: string;
-    location: string;
-    bpm: number;
-    start: number;
-    end: number;
-    tracks?: SourceTrack[];
   };
 
   type SourceTrack = {
@@ -21,9 +14,12 @@ declare global {
     path: string;
   };
 
-  type SoloMuteType = {
-    solo: boolean;
-    mute: boolean;
+  type MixSettings = {
+    id: string;
+    songSlug: string;
+    volume: number;
+    coverArt: number;
+    mixName: string;
   };
 
   type TrackSettings = {
@@ -31,47 +27,13 @@ declare global {
     name: string;
     path: string;
     songSlug: string;
-
-    // MAIN
     volume: number;
-    volumeMode: string;
-    pan: number;
-    panMode: string;
-    soloMute: { solo: boolean; mute: boolean };
-    soloMuteMode: string;
-
-    // FX
-    fxNames: string[];
-    delaySettings: DelaySettings;
-    reverbSettings: ReverbSettings;
-    pitchShiftSettings: PitchShiftSettings;
-
-    // PANELS
-    panelPosition: { x: number; y: number };
-    panelSize: { width: string; height: string };
-    panelActive: boolean;
+    mixSettingsId: string;
   };
 
-  type DelaySettings = {
-    playbackMode: string | undefined;
-    bypassed: boolean | undefined;
-    mix: number | undefined;
-    delayTime: number | undefined;
-    feedback: number | undefined;
-  };
-
-  type ReverbSettings = {
-    playbackMode: string | undefined;
-    bypassed: boolean | undefined;
-    mix: number | undefined;
-    preDelay: number | undefined;
-    decay: number | undefined;
-  };
-
-  type PitchShiftSettings = {
-    playbackMode: string | undefined;
-    bypassed: boolean | undefined;
-    mix: number | undefined;
-    pitch: number | undefined;
+  type InitialContext = {
+    sourceSong: SourceSong | undefined;
+    currentMix: MixSettings;
+    currentTracks: TrackSettings[] | undefined;
   };
 }

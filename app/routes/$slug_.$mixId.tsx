@@ -2,14 +2,8 @@ import { useLoaderData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import Mixer from "~/components/Mixer";
-import { getInitialState } from "./$slug";
+import { getInitialState } from "~/utils/initialState";
 import invariant from "tiny-invariant";
-
-type Data = {
-  sourceSong: any;
-  currentMix: any;
-  currentTracks: any;
-};
 
 export const loader: LoaderFunction = async ({ params: { slug, mixId } }) => {
   if (typeof mixId !== "string") return redirect(`/`);
@@ -17,16 +11,17 @@ export const loader: LoaderFunction = async ({ params: { slug, mixId } }) => {
   invariant(slug, "slug not found");
   const { sourceSong, currentMix, currentTracks } = await getInitialState(slug);
 
-  const data: Data = {
-    currentTracks,
-    currentMix,
+  const data: InitialContext = {
     sourceSong,
+    currentMix,
+    currentTracks,
   };
   return json(data);
 };
 
 export default function MixNameRoute() {
-  const { sourceSong, currentMix, currentTracks } = useLoaderData();
+  const { sourceSong, currentMix, currentTracks } =
+    useLoaderData<typeof loader>();
 
   if (sourceSong?.tracks.length !== currentTracks.length) {
     if (typeof window === "undefined") return;
@@ -35,6 +30,11 @@ export default function MixNameRoute() {
   if (typeof window !== "undefined") {
     console.log("currentTracks", currentTracks);
   }
+  const initialContext = {
+    sourceSong,
+    currentMix,
+    currentTracks,
+  };
 
-  return <Mixer />;
+  return <Mixer initialContext={initialContext} />;
 }

@@ -1,73 +1,39 @@
-import { createMachine, assign } from "xstate";
-import { produce } from "immer";
+import { createMachine } from "xstate";
 
-export const initMachine = createMachine(
+export const mixerMachine = createMachine(
   {
-    id: "init",
-    initial: "idle",
-    context: {
-      sourceSong: undefined,
-      currentMix: undefined,
-      currentTracks: undefined,
-    },
+    id: "mixer",
+    initial: "stopped",
     states: {
-      idle: {
+      stopped: {
         on: {
-          SET_CONTEXT: {
-            target: "selected",
-            actions: "setContext",
+          PLAY: {
+            target: "playing",
           },
         },
       },
-      selected: {
-        on: {
-          LOADING: {
-            target: "loaded",
-          },
+      playing: {
+        entry: {
+          type: "play",
         },
-      },
-      loaded: {
-        invoke: {
-          src: "mixerMachine",
-          id: "invoke-6jjxx",
+        on: {
+          PAUSE: {
+            target: "stopped",
+            actions: {
+              type: "pause",
+            },
+          },
         },
       },
     },
-    schema: { events: {} as { type: "SET_CONTEXT" } | { type: "LOADING" } },
-    predictableActionArguments: true,
-    preserveActionOrder: true,
+    types: { events: {} as { type: "PAUSE" } | { type: "PLAY" } },
   },
   {
     actions: {
-      setContext: assign(
-        (context, { sourceSong, currentMix, currentTracks }) => {
-          return produce(context, (draft) => {
-            draft.sourceSong = sourceSong;
-            draft.currentMix = currentMix;
-            draft.currentTracks = currentTracks;
-          });
-        }
-      ),
+      play: ({ context, event }) => {},
+      pause: ({ context, event }) => {},
     },
-    services: {
-      mixerMachine: createMachine({
-        id: "mixer",
-        initial: "stopped",
-        states: {
-          playing: {
-            entry: "play",
-            on: {
-              PAUSE: { target: "stopped", actions: "pause" },
-            },
-          },
-          stopped: {
-            on: {
-              PLAY: { target: "playing" },
-            },
-          },
-        },
-      }),
-    },
+    actors: {},
     guards: {},
     delays: {},
   }
